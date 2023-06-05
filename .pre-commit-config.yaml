@@ -1,0 +1,50 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+
+# Don't run pre-commit on files under third-party/
+exclude: "^\
+  (third-party/.*)\
+  "
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.1.0
+    hooks:
+    - id: trailing-whitespace # trims trailing whitespace.
+    - id: end-of-file-fixer # ensures that a file is either empty, or ends with one newline.
+    - id: check-yaml # checks yaml files for parseable syntax.
+    - id: check-added-large-files # prevents giant files from being committed.
+    - id: requirements-txt-fixer # sorts entries in requirements.txt.
+    - id: check-merge-conflict # checks for files that contain merge conflict strings.
+    - id: mixed-line-ending # replaces or checks mixed line ending.
+    - id: check-executables-have-shebangs # ensures that (non-binary) executables have a shebang.
+    - id: check-shebang-scripts-are-executable # ensures that (non-binary) files with a shebang are executable.
+
+  - repo: https://github.com/pre-commit/mirrors-clang-format
+    rev: v13.0.0
+    hooks:
+    - id: clang-format
+
+  - repo: https://github.com/pocc/pre-commit-hooks
+    rev: v1.3.5
+    hooks:
+    - id: clang-tidy
+      args: [-checks=clang-diagnostic-return-type]
+      files: src/.*\.c
+
+  - repo: local
+    hooks:
+    - id: cppcheck
+      name: cppcheck
+      entry: cppcheck
+      language: system
+      args:
+        [
+          --enable=all,
+          --suppress=unusedFunction,
+          --suppress=unmatchedSuppression,
+          --suppress=missingIncludeSystem,
+          --suppress=toomanyconfigs,
+          --error-exitcode=1,
+        ]
+      files: \.(c|h|cpp)$
